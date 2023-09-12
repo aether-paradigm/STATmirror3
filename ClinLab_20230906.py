@@ -287,7 +287,8 @@ with tab2:
                 else: 
                     st.write(f'{variable} has less than 3 data points, normality test cannot be performed.')
 
-        st.caption ('When p-value of Shapiro-Wilk test is < 0.05:  \n - This column of data is not normally distributed.  \n - Non-parametric tests are recommended for downstream analysis.  \n When p-value of Shapiro-Wilk test is > 0.05: \n - Data has a normal distribution and parametric tests can be used. ')
+        st.caption ('When p-value of Shapiro-Wilk test is < 0.05:  \n - This column of data is not normally distributed.  \n - Non-parametric tests are recommended for downstream analysis.  ')
+        st.caption (' When p-value of Shapiro-Wilk test is > 0.05: \n - Data has a normal distribution and parametric tests can be used. ')
 
 
 
