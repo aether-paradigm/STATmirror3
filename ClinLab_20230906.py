@@ -749,7 +749,7 @@ with tab4:
             #st.write('test4')
 
 
-         st.write('st.caption('If p-value < 0.05, please proceed with post-hoc test to determine which groups are significantly different from the other. ')
+         st.write('If p-value < 0.05, please proceed with post-hoc test to determine which groups are significantly different from the other. ')
          if st.checkbox('Would you like to do a Post-hoc Test?'):
              
              if anovatype == 'One-way ANOVA':
