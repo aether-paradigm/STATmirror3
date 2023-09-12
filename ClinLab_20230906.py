@@ -706,13 +706,11 @@ with tab4:
                 _, pnorm_one = f_oneway( *to_one_way.values())
                 if pnorm_one < 0.0001:
                     pnorm_one = "<0.0001"
-                    st.write('As p-value < 0.05, please filter the grouping variable (using Filter Dataframe on the left) to TWO groups to conduct a set of pairwise comparisons to determine which groups are significantly different from the other. ')
                     
                 else:
                     pnorm_one = round(pnorm_one,5)
-                    st.write(f'One-way Anova p value: {pnorm_one}')
-                    st.write('If p-value < 0.05, please filter the grouping variable (using Filter Dataframe on the left) to TWO groups to conduct a set of pairwise comparisons to determine which groups are significantly different from the other. ')
-         
+                st.write(f'One-way Anova p value: {pnorm_one}')
+                    
             elif anovatype == 'Kruskal-Wallis H-test':
                  _, pnorm_kw = stats.kruskal( *to_one_way.values())
                  if pnorm_kw < 0.0001:
@@ -721,9 +719,8 @@ with tab4:
                  else:
                     pnorm_kw = round(pnorm_kw,5)
 
-                 st.write(f'One-way Anova p value: {pnorm_kw}')
-                 st.caption('If p-value < 0.05, please filter the grouping variable (using Filter Dataframe on the left) to TWO groups to conduct a set of pairwise comparisons to determine which groups are significantly different from the other. ')
-         
+                 st.write(f'Kruskal-Wallis H-test p value: {pnorm_kw}')
+                 
 
          elif len(to_one_way) == 2:
 
@@ -739,16 +736,15 @@ with tab4:
                 st.caption(f'NOTICE: As <{selected_var1}> have less than two groupings when grouped by <{selected_categorical_var1}>, T-test is done instead of ANOVA. ')
 
             elif anovatype == 'Kruskal-Wallis H-test':
-                _, pnorm_kw = stats.kruskal( *to_one_way.values())
+                _, pnorm_kw = stats.mannwhitneyu( *to_one_way.values())
                 if pnorm_kw < 0.0001:
                     pnorm_kw = "<0.0001"
                    
                 else:
                     pnorm_kw = round(pnorm_kw,5)
 
-                st.write(f'One-way Anova p value: {pnorm_kw}')
-                st.caption('If p-value < 0.05, please filter the grouping variable (using Filter Dataframe on the left) to TWO groups to conduct a set of pairwise comparisons to determine which groups are significantly different from the other. ')
-                st.caption(f'NOTICE: As <{selected_var1}> have less than two groupings when grouped by <{selected_categorical_var1}>, T-test is done instead of ANOVA. ')
+                st.write(f'Mann Whitney U Test p value: {pnorm_kw}')
+                st.caption(f'NOTICE: As <{selected_var1}> have less than two groupings when grouped by <{selected_categorical_var1}>, Mann Whitney U Test is done instead of ANOVA. ')
          else:
             st.write(f'NULL: Selected variable <{selected_var1}> have less than two groupings when grouped by <{selected_categorical_var1}>.')
             #st.write('test4')
