@@ -257,6 +257,7 @@ with tab2:
             st.caption ('Note that 50th percentile = median.')
 
         else: 
+            st.write(cleandata[selected_descr_var])
             summary = rp.summary_cat (cleandata[selected_descr_var])
             st.dataframe (summary)
 
