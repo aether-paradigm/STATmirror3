@@ -749,6 +749,24 @@ with tab4:
             st.write(f'NULL: Selected variable <{selected_var1}> have less than two groupings when grouped by <{selected_categorical_var1}>.')
             #st.write('test4')
 
+         st.caption('If p-value < 0.05, please proceed with post-hoc test to conduct a set of pairwise comparisons to determine which groups are significantly different from the other. ')
+                
+         if st.checkbox('Would you like to do a Post-hoc Test?'):
+             
+             if anovatype == 'One-way ANOVA':
+                test100 = sp.posthoc_ttest(dataframe_filter4,val_col = selected_var1, group_col = selected_categorical_var1, p_adjust = 'bonferroni')
+
+             elif anovatype == 'Kruskal-Wallis H-test':
+                test100 = sp.posthoc_mannwhitney(dataframe_filter4,val_col = selected_var1, group_col = selected_categorical_var1, p_adjust = 'bonferroni')
+
+             st.write(" ")
+             st.write(" ")
+             st.write("p-values of Post-hoc test - with Multiple Test Correction - Bonferroni:")
+             st.write(test100)
+
+         else:
+             st.write('Click to start analysis')
+
          st.header("Chi-squared Test")
 
          st.caption ("Chi-squared test is appropriate when comparing proportions between groups")
@@ -762,6 +780,10 @@ with tab4:
 
 
          crosstab = pd.crosstab([x_var2], [y_var2])
+         # Calculate the percentages of each cell
+         crosstab_perc = crosstab.apply(lambda x: x/x.sum(), axis=1)
+         # Format the percentages
+         crosstab_perc = crosstab_perc.applymap(lambda x: '{:.1%}'.format(x))
 
          chi2, p, dof, expected = stats.chi2_contingency(crosstab)
          pnorm_chisq = p
@@ -775,7 +797,12 @@ with tab4:
          st.write(" ")
 
          st.write("Crosstab Row represents: ",selected_var2," \n Crosstab Column represents: ",selected_categorical_var2)
-         st.dataframe(crosstab)
+         col1, col2 = st.columns(2)
+         with col1:
+             st.dataframe(crosstab)
+
+         with col2:
+             st.dataframe(crosstab_perc)
 
          st.write(f'Chi-squared p-value: {pnorm_chisq}') 
 
