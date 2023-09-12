@@ -748,7 +748,8 @@ with tab4:
             st.write(f'NULL: Selected variable <{selected_var1}> have less than two groupings when grouped by <{selected_categorical_var1}>.')
             #st.write('test4')
 
-                
+
+         st.write('st.caption('If p-value < 0.05, please proceed with post-hoc test to determine which groups are significantly different from the other. ')
          if st.checkbox('Would you like to do a Post-hoc Test?'):
              
              if anovatype == 'One-way ANOVA':
