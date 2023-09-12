@@ -12,6 +12,7 @@ import seaborn as sns
 import researchpy as rp
 import csv
 import plotly.express as px
+import scikit_posthocs as sp
 import chart_studio.plotly as pxchart
 import numpy as np
 from sklearn import linear_model, metrics
