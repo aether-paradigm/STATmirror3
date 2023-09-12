@@ -728,11 +728,10 @@ with tab4:
                 _, pnorm_one = f_oneway( *to_one_way.values())
                 if pnorm_one < 0.0001:
                     pnorm_one = "<0.0001"
-                    st.write('As p-value < 0.05, please filter the grouping variable (using Filter Dataframe on the left) to TWO groups to conduct a set of pairwise comparisons to determine which groups are significantly different from the other. ')
+                    
                 else:
                     pnorm_one = round(pnorm_one,5)
                 st.write(f'T-test p value: {pnorm_one}')
-                st.caption('If p-value < 0.05, please filter the grouping variable (using Filter Dataframe on the left) to TWO groups to conduct a set of pairwise comparisons to determine which groups are significantly different from the other. ')
                 st.caption(f'NOTICE: As <{selected_var1}> have less than two groupings when grouped by <{selected_categorical_var1}>, T-test is done instead of ANOVA. ')
 
             elif anovatype == 'Kruskal-Wallis H-test':
@@ -749,7 +748,6 @@ with tab4:
             st.write(f'NULL: Selected variable <{selected_var1}> have less than two groupings when grouped by <{selected_categorical_var1}>.')
             #st.write('test4')
 
-         st.caption('If p-value < 0.05, please proceed with post-hoc test to conduct a set of pairwise comparisons to determine which groups are significantly different from the other. ')
                 
          if st.checkbox('Would you like to do a Post-hoc Test?'):
              
