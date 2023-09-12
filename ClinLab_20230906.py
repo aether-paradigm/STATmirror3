@@ -249,13 +249,15 @@ with tab2:
             )
 
         #descriptive statistics if numeric data:
-        if is_numeric_dtype(cleandata[selected_histo_var]):
-            description = cleandata[selected_histo_var].describe()
+        selected_descr_var = st.selectbox('Which Variable would you like to generate Descriptive Statistics for?', cleandata.columns)
+    
+        if is_numeric_dtype(cleandata[selected_descr_var]):
+            description = cleandata[selected_descr_var].describe()
             st.write (description)
             st.caption ('Note that 50th percentile = median.')
 
-        elif is_object_dtype (cleandata [selected_histo_var]):
-            summary = rp.summary_cat (cleandata[selected_histo_var])
+        else: 
+            summary = rp.summary_cat (cleandata[selected_descr_var])
             st.dataframe (summary)
 
         st.header ("Normality testing with Shapiro-Wilk test for continuous variables")
