@@ -256,10 +256,11 @@ with tab2:
             st.write (description)
             st.caption ('Note that 50th percentile = median.')
 
-        #else: 
-            #st.write(cleandata[selected_descr_var])
-            #summary = rp.summary_cat (cleandata[selected_descr_var])
-            #st.dataframe (summary)
+        else: 
+            summary = cleandata[selected_descr_var].value_counts()
+            percents_summary = cleandata[selected_descr_var].value_counts(normalize=True).mul(100).round(1).astype(str) + '%'
+            cat_summary = pd.concat([summary,percents_summary], axis=1, keys=['Counts', 'Proportions'])
+            st.dataframe (cat_summary)
 
         st.header ("Normality testing with Shapiro-Wilk test for continuous variables")
 
