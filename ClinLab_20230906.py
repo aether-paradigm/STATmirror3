@@ -12,7 +12,6 @@ import seaborn as sns
 import researchpy as rp
 import csv
 import plotly.express as px
-import scikit_posthocs as sp
 import chart_studio.plotly as pxchart
 import numpy as np
 from sklearn import linear_model, metrics
@@ -37,6 +36,7 @@ from scipy.stats import chi2_contingency
 from scipy.stats import chi2
 from scipy.stats import contingency
 from scipy.stats.contingency import relative_risk
+import scikit_posthocs as sp
 import math
 from sigfig import round
 import random
@@ -55,7 +55,7 @@ tab6, tab2, tab3, tab4, tab5 = st.tabs(["Guide","Descriptive and Normality Testi
 
 with tab6:
     
-
+ 
 
     # pdf1 = Image.open('C:/Users/carina.t/Dropbox/hello_world/20230810 front page annotations1024_1.png')
     pdf1 = Image.open('images/20230810 front page annotations1024_1.png')
@@ -214,7 +214,7 @@ with st.sidebar:
 
 with tab2:
 
-        st.header('Histogram for Continuous Variables')
+        st.header('Histogram and Descriptive Statistics')
 
         st.caption ("A histogram helps you to visualise the distribution of your data; change the number of bins to optimise")
 
@@ -248,9 +248,10 @@ with tab2:
             mime="application/octet-stream"
             )
 
-        st.header('Descriptive Statistics for all Variables')
-        selected_descr_var = st.selectbox('Which numerical variable would you like to generate Descriptive Statistics for?', cleandata.columns)
-    
+        #descriptive statistics if numeric data:
+        selected_descr_var = st.selectbox('Which Variable would you like to generate Descriptive Statistics for?', cleandata.columns)
+
+        #descriptive statistics if numeric data:
         if is_numeric_dtype(cleandata[selected_descr_var]):
             description = cleandata[selected_descr_var].describe()
             st.write (description)
@@ -288,8 +289,7 @@ with tab2:
                 else: 
                     st.write(f'{variable} has less than 3 data points, normality test cannot be performed.')
 
-        st.caption ('When p-value of Shapiro-Wilk test is < 0.05:  \n - This column of data is not normally distributed.  \n - Non-parametric tests are recommended for downstream analysis.  ')
-        st.caption (' When p-value of Shapiro-Wilk test is > 0.05: \n - Data has a normal distribution and parametric tests can be used. ')
+        st.caption ('When p-value of Shapiro-Wilk test is < 0.05:  \n - This column of data is not normally distributed.  \n - Non-parametric tests are recommended for downstream analysis.  \n When p-value of Shapiro-Wilk test is > 0.05: \n - Data has a normal distribution and parametric tests can be used. ')
 
 
 
@@ -677,7 +677,7 @@ with tab4:
 
 
          st.header("One-way ANOVA for Continuous Variables")
-         st.caption('This conducts a comparision between 3 or more groups. One-way ANOVA is parametric. Kruskal Wallis H test is non-parametric. If there are only 2 groups, T-test will be performed instead.')
+         st.caption('3 groups or more are needed to do an ANOVA analysis. If there are only 2 groups, T-test will be performed instead.')
          anovatype = st.selectbox(
             'Which test would you want to use?',
             ("One-way ANOVA", "Kruskal-Wallis H-test"))
@@ -688,7 +688,7 @@ with tab4:
              st.write("You selected: Kruskal-Wallis H-test")
 
          selected_var1 = st.selectbox('What is the variable to be tested? Note that this has to be a continuous variable.', scatters_df._get_numeric_data().columns)
-         selected_categorical_var1 = st.selectbox('What is the variable used to separate the groups?', scatters_df.select_dtypes(exclude=["number"]).columns)
+         selected_categorical_var1 = st.selectbox('What is the group used to separate the variable selected?', scatters_df.select_dtypes(exclude=["number"]).columns)
          pop = list(set(scatters_df[selected_categorical_var1]))
 
          dataframe_filter3 = scatters_df[[selected_var1,selected_categorical_var1]]
@@ -712,7 +712,9 @@ with tab4:
                 else:
                     pnorm_one = round(pnorm_one,5)
                 st.write(f'One-way Anova p value: {pnorm_one}')
-                    
+                
+                
+
             elif anovatype == 'Kruskal-Wallis H-test':
                  _, pnorm_kw = stats.kruskal( *to_one_way.values())
                  if pnorm_kw < 0.0001:
@@ -730,47 +732,41 @@ with tab4:
                 _, pnorm_one = f_oneway( *to_one_way.values())
                 if pnorm_one < 0.0001:
                     pnorm_one = "<0.0001"
-                    
                 else:
                     pnorm_one = round(pnorm_one,5)
                 st.write(f'T-test p value: {pnorm_one}')
                 st.caption(f'NOTICE: As <{selected_var1}> have less than two groupings when grouped by <{selected_categorical_var1}>, T-test is done instead of ANOVA. ')
 
             elif anovatype == 'Kruskal-Wallis H-test':
-                _, pnorm_kw = stats.mannwhitneyu( *to_one_way.values())
+                _, pnorm_kw = stats.kruskal( *to_one_way.values())
                 if pnorm_kw < 0.0001:
                     pnorm_kw = "<0.0001"
                    
                 else:
                     pnorm_kw = round(pnorm_kw,5)
 
-                st.write(f'Mann Whitney U Test p value: {pnorm_kw}')
-                st.caption(f'NOTICE: As <{selected_var1}> have less than two groupings when grouped by <{selected_categorical_var1}>, Mann Whitney U Test is done instead of ANOVA. ')
+                st.write(f'Mann Whitney p value: {pnorm_kw}')
+                st.caption('If p-value < 0.05, please filter the grouping variable (using Filter Dataframe on the left) to TWO groups to conduct a set of pairwise comparisons to determine which groups are significantly different from the other. ')
+                st.caption(f'NOTICE: As <{selected_var1}> have less than two groupings when grouped by <{selected_categorical_var1}>, Mann Whitney U Test is done instead of Kruskal-Wallis H-test. ')
          else:
             st.write(f'NULL: Selected variable <{selected_var1}> have less than two groupings when grouped by <{selected_categorical_var1}>.')
             #st.write('test4')
 
-
-         st.write('If p-value < 0.05, please proceed with post-hoc test to determine which groups are significantly different from the other. ')
+         st.caption('If p-value < 0.05, please proceed with post-hoc test to conduct a set of pairwise comparisons to determine which groups are significantly different from the other. ')
+                
          if st.checkbox('Would you like to do a Post-hoc Test?'):
              
              if anovatype == 'One-way ANOVA':
-                #test100 = sp.posthoc_ttest(dataframe_filter4,val_col = selected_var1, group_col = selected_categorical_var1, p_adjust = 'bonferroni')
-                test100 = sp.posthoc_tukey(dataframe_filter4,val_col = selected_var1, group_col = selected_categorical_var1)
-                st.write(" ")
-                st.write(" ")
-                st.write("p-values of Post-hoc Tukey's test - with Multiple Test Correction - Bonferroni:")
-             
+                test100 = sp.posthoc_ttest(dataframe_filter4,val_col = selected_var1, group_col = selected_categorical_var1, p_adjust = 'bonferroni')
 
              elif anovatype == 'Kruskal-Wallis H-test':
-                #test100 = sp.posthoc_mannwhitney(dataframe_filter4,val_col = selected_var1, group_col = selected_categorical_var1, p_adjust = 'bonferroni')
-                test100 = sp.posthoc_dunn(dataframe_filter4,val_col = selected_var1, group_col = selected_categorical_var1, p_adjust = 'bonferroni')
-                st.write(" ")
-                st.write(" ")
-                st.write("p-values of Post-hoc Dunn's test - with Multiple Test Correction - Bonferroni:")
+                test100 = sp.posthoc_mannwhitney(dataframe_filter4,val_col = selected_var1, group_col = selected_categorical_var1, p_adjust = 'bonferroni')
 
-
+             st.write(" ")
+             st.write(" ")
+             st.write("p-values of Post-hoc test - with Multiple Test Correction - Bonferroni:")
              st.write(test100)
+
 
          else:
              st.write('Click to start analysis')
@@ -824,7 +820,7 @@ with tab4:
          
          image = Image.open('images/Relative_Risk_Odds_Ratio_Picture.png')
              # Display the image
-         st.image(image, caption='Relative Risk and Odds Ratio Formula', use_column_width=True)
+         st.image(image, caption='Relative Risk Formula', use_column_width=True)
 
          
 
@@ -848,7 +844,7 @@ with tab4:
 
          st.write(" ")
          if independent_var in variables2:
-            selected_pop_case = st.selectbox('Which is the value that represents that event did happen? Eg. Positive for Disease', pop_set2)
+            selected_pop_case = st.selectbox('Which is the value that represents that event did happened? Eg. Positive for Disease', pop_set2)
 
 
             dataframe_filter10 = scatters_df[[independent_var,dependent_var]]
