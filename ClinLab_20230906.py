@@ -214,7 +214,7 @@ with st.sidebar:
 
 with tab2:
 
-        st.header('Histogram and Descriptive Statistics')
+        st.header('Histogram for Continuous Variables')
 
         st.caption ("A histogram helps you to visualise the distribution of your data; change the number of bins to optimise")
 
@@ -248,7 +248,7 @@ with tab2:
             mime="application/octet-stream"
             )
 
-        
+        st.header('Descriptive Statistics for all Variables')
         selected_descr_var = st.selectbox('Which numerical variable would you like to generate Descriptive Statistics for?', cleandata.columns)
     
         if is_numeric_dtype(cleandata[selected_descr_var]):
@@ -677,7 +677,7 @@ with tab4:
 
 
          st.header("One-way ANOVA for Continuous Variables")
-         st.caption('3 groups or more are needed to do an ANOVA analysis. If there are only 2 groups, T-test will be performed instead.')
+         st.caption('This conducts a comparision between 3 or more groups. One-way ANOVA is parametric. Kruskal Wallis H test is non-parametric. If there are only 2 groups, T-test will be performed instead.')
          anovatype = st.selectbox(
             'Which test would you want to use?',
             ("One-way ANOVA", "Kruskal-Wallis H-test"))
@@ -755,14 +755,21 @@ with tab4:
          if st.checkbox('Would you like to do a Post-hoc Test?'):
              
              if anovatype == 'One-way ANOVA':
-                test100 = sp.posthoc_ttest(dataframe_filter4,val_col = selected_var1, group_col = selected_categorical_var1, p_adjust = 'bonferroni')
+                #test100 = sp.posthoc_ttest(dataframe_filter4,val_col = selected_var1, group_col = selected_categorical_var1, p_adjust = 'bonferroni')
+                test100 = sp.posthoc_tukey(dataframe_filter4,val_col = selected_var1, group_col = selected_categorical_var1)
+                st.write(" ")
+                st.write(" ")
+                st.write("p-values of Post-hoc Tukey's test - with Multiple Test Correction - Bonferroni:")
+             
 
              elif anovatype == 'Kruskal-Wallis H-test':
-                test100 = sp.posthoc_mannwhitney(dataframe_filter4,val_col = selected_var1, group_col = selected_categorical_var1, p_adjust = 'bonferroni')
+                #test100 = sp.posthoc_mannwhitney(dataframe_filter4,val_col = selected_var1, group_col = selected_categorical_var1, p_adjust = 'bonferroni')
+                test100 = sp.posthoc_dunn(dataframe_filter4,val_col = selected_var1, group_col = selected_categorical_var1, p_adjust = 'bonferroni')
+                st.write(" ")
+                st.write(" ")
+                st.write("p-values of Post-hoc Dunn's test - with Multiple Test Correction - Bonferroni:")
 
-             st.write(" ")
-             st.write(" ")
-             st.write("p-values of Post-hoc test - with Multiple Test Correction - Bonferroni:")
+
              st.write(test100)
 
          else:
@@ -817,7 +824,7 @@ with tab4:
          
          image = Image.open('images/Relative_Risk_Odds_Ratio_Picture.png')
              # Display the image
-         st.image(image, caption='Relative Risk Formula', use_column_width=True)
+         st.image(image, caption='Relative Risk and Odds Ratio Formula', use_column_width=True)
 
          
 
@@ -841,7 +848,7 @@ with tab4:
 
          st.write(" ")
          if independent_var in variables2:
-            selected_pop_case = st.selectbox('Which is the value that represents that event did happened? Eg. Positive for Disease', pop_set2)
+            selected_pop_case = st.selectbox('Which is the value that represents that event did happen? Eg. Positive for Disease', pop_set2)
 
 
             dataframe_filter10 = scatters_df[[independent_var,dependent_var]]
