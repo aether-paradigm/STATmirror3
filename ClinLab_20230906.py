@@ -263,7 +263,8 @@ with tab2:
             cat_summary = pd.concat([summary,percents_summary], axis=1, keys=['Counts', 'Proportions'])
             st.dataframe (cat_summary)
 
-        st.header ("Normality testing with Shapiro-Wilk test for continuous variables")
+        st.header ("Which of my continuous variables are normally distributed?")
+        st.caption("Test conducted using Shapiro-Wilk test for continuous variables only.")
 
         # normality testing for all numeric variables
         for variable in cleandata.columns:
@@ -282,14 +283,17 @@ with tab2:
 
                     if normality_p <0.05:
                         is_column_normal = "Not Normal Distribution"
+                        st.write (f'{variable} : **:red[{is_column_normal}]** [ W: {normality_stat} , p-value: {normality_p_display} ]')
                     else:
                         is_column_normal = "Normal Distribution"
+                        st.write (f'{variable} : :green[{is_column_normal}]** [ W: {normality_stat} , p-value: {normality_p_display} ]')
 
-                    st.write (f'{variable} : {is_column_normal} [ W: {normality_stat} , p-value: {normality_p_display} ]')
                 else: 
                     st.write(f'{variable} has less than 3 data points, normality test cannot be performed.')
 
-        st.caption ('When p-value of Shapiro-Wilk test is < 0.05:  \n - This column of data is not normally distributed.  \n - Non-parametric tests are recommended for downstream analysis.  \n When p-value of Shapiro-Wilk test is > 0.05: \n - Data has a normal distribution and parametric tests can be used. ')
+        st.caption ('When p-value of Shapiro-Wilk test is < 0.05:  \n - This column of data is not normally distributed.  \n - Non-parametric tests are recommended for downstream analysis.  ')
+        st.caption ('When p-value of Shapiro-Wilk test is > 0.05: \n - Data has a normal distribution and parametric tests can be used. ')
+
 
 
 
@@ -449,6 +453,8 @@ with tab5:
    df = cleandata
 
    st.header('Part 1: Correlation analysis')
+   st.caption("Pearson correlation is only applicable to two variables that are linearly related; otherwise Spearman correlation should be used. In addition, Spearman correlation is recommended for non-parametric data. When in doubt, use Spearman correlation.")
+
 
    corrtype = st.selectbox(
        'What correlation test do you want to use?',
@@ -677,7 +683,7 @@ with tab4:
 
 
          st.header("One-way ANOVA for Continuous Variables")
-         st.caption('3 groups or more are needed to do an ANOVA analysis. If there are only 2 groups, T-test will be performed instead.')
+         st.caption('This comparison tests the difference between 3 groups or more. One-way ANOVA is parametric. Kruskal-Wallis H test is non-parametric. If there are only 2 groups, T-test will be performed instead.')
          anovatype = st.selectbox(
             'Which test would you want to use?',
             ("One-way ANOVA", "Kruskal-Wallis H-test"))
