@@ -185,7 +185,7 @@ with st.sidebar:
        return df
 
    category_features = []
-   threshold = 10
+   threshold = 5
    for each in df.columns:
        if df[each].nunique() < threshold:
           category_features.append(each)
